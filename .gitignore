@@ -4,6 +4,7 @@
 
 # But Not These Files
 !.gitignore
+!README.md
 !Stacker.jsx
 !Stacker\ Scripts\ Only/
 !Stacker\ Scripts\ Only/*.jsx
