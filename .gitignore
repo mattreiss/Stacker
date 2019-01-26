@@ -1,0 +1,9 @@
+# Ignore All Files
+*
+
+
+# But Not These Files
+!.gitignore
+!Stacker.jsx
+!Stacker\ Scripts\ Only/
+!Stacker\ Scripts\ Only/*.jsx
