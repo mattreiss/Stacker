@@ -1,14 +1,14 @@
 {
-  "main.css": "/Stacker/docs/app/build/index.html/static/css/main.aa0645f5.chunk.css",
-  "main.js": "/Stacker/docs/app/build/index.html/static/js/main.aa22aeda.chunk.js",
-  "main.js.map": "/Stacker/docs/app/build/index.html/static/js/main.aa22aeda.chunk.js.map",
-  "static/js/1.fa92c112.chunk.js": "/Stacker/docs/app/build/index.html/static/js/1.fa92c112.chunk.js",
-  "static/js/1.fa92c112.chunk.js.map": "/Stacker/docs/app/build/index.html/static/js/1.fa92c112.chunk.js.map",
-  "runtime~main.js": "/Stacker/docs/app/build/index.html/static/js/runtime~main.2bad3364.js",
-  "runtime~main.js.map": "/Stacker/docs/app/build/index.html/static/js/runtime~main.2bad3364.js.map",
-  "static/media/logo.svg": "/Stacker/docs/app/build/index.html/static/media/logo.5d5d9eef.svg",
-  "static/css/main.aa0645f5.chunk.css.map": "/Stacker/docs/app/build/index.html/static/css/main.aa0645f5.chunk.css.map",
-  "index.html": "/Stacker/docs/app/build/index.html/index.html",
-  "precache-manifest.ddf6e1502f64f080897cf62824aa8c80.js": "/Stacker/docs/app/build/index.html/precache-manifest.ddf6e1502f64f080897cf62824aa8c80.js",
-  "service-worker.js": "/Stacker/docs/app/build/index.html/service-worker.js"
+  "main.css": "/Stacker/app/build/index.html/static/css/main.aa0645f5.chunk.css",
+  "main.js": "/Stacker/app/build/index.html/static/js/main.e9dbc608.chunk.js",
+  "main.js.map": "/Stacker/app/build/index.html/static/js/main.e9dbc608.chunk.js.map",
+  "static/js/1.fa92c112.chunk.js": "/Stacker/app/build/index.html/static/js/1.fa92c112.chunk.js",
+  "static/js/1.fa92c112.chunk.js.map": "/Stacker/app/build/index.html/static/js/1.fa92c112.chunk.js.map",
+  "runtime~main.js": "/Stacker/app/build/index.html/static/js/runtime~main.cc322b93.js",
+  "runtime~main.js.map": "/Stacker/app/build/index.html/static/js/runtime~main.cc322b93.js.map",
+  "static/media/logo.svg": "/Stacker/app/build/index.html/static/media/logo.5d5d9eef.svg",
+  "static/css/main.aa0645f5.chunk.css.map": "/Stacker/app/build/index.html/static/css/main.aa0645f5.chunk.css.map",
+  "index.html": "/Stacker/app/build/index.html/index.html",
+  "precache-manifest.53bfc3c01b8907526dab414e71821900.js": "/Stacker/app/build/index.html/precache-manifest.53bfc3c01b8907526dab414e71821900.js",
+  "service-worker.js": "/Stacker/app/build/index.html/service-worker.js"
 }
