@@ -17,15 +17,24 @@ function stripOutInteger(o) {
 function getFileList() {
   var selectedFolder = Folder.selectDialog( "Please select input folder");
   if (selectedFolder !== null)  {
-    let fileList = selectedFolder.getFiles(/\.(jpg|jpeg|cr2|ARW|psd)$/i);
-    if (!fileList || fileList.length < 2) {
+    var selectedFileList = selectedFolder.getFiles(/\.(jpg|jpeg|cr2|ARW|psd)$/i);
+    if (!selectedFileList || selectedFileList.length < 2) {
       return alert("Please select a folder with 2 or more files you want to stack");
     }
-    fileList.sort(function(a, b) {
+    var filteredFileList = [];
+    var uniqueFiles = {};
+    for (var i in selectedFileList) {
+      var file = selectedFileList[i];
+      if (!uniqueFiles[stripOutInteger(file)]) {
+        uniqueFiles[stripOutInteger(file)] = true;
+        var cleanFile = File(String(file).replace("._", ""));
+        filteredFileList.push(cleanFile);
+      }
+    }
+    filteredFileList.sort(function(a, b) {
       return stripOutInteger(a) - stripOutInteger(b);
     });
-    printFileList(fileList);
-    return fileList
+    return filteredFileList;
   }
 }
 
@@ -33,14 +42,14 @@ function getOutputDir() {
   return Folder.selectDialog( "Please select an output folder");
 }
 
-function printFileList(fileList) {
+function printFileList() {
     var c = 0;
     var list = "";
     for (var i in fileList) {
       c++;
-      if (c > 20) break;
+      if (c > 30) break;
       var file = fileList[i];
-      list += stripOutInteger(file) + "\n";
+      list += file + "\n";
     }
     alert("fileList: \n" + list);
 }
@@ -54,6 +63,7 @@ function main() {
   if (!fileList) {
     return;
   }
+  printFileList();
 
   outputDir = getOutputDir();
   if (!outputDir) {

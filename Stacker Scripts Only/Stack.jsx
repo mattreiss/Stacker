@@ -86,11 +86,6 @@ function runAction(action) {
   executeAction( idPly, desc12, DialogModes.NO );
 }
 
-function constrainStackLength(index, stackLength) {
-  if (index >= stackLength) {
-    activeDocument.layers[activeDocument.layers.length -1].remove()
-  }
-}
 
 function stack(fileList, outputDir, options) {
   alert("Stacking " + fileList.length + " files!")
@@ -98,10 +93,13 @@ function stack(fileList, outputDir, options) {
   checkBackground();
   for (var i = 1; i < fileList.length; i++) {
     addToStack(fileList[i], options.blendMode);
-    applyEffect(options.effect);
-    alignLayers(options.alignLayers);
-    runAction(options.action);
-    saveJpg(outputDir, i);
-    constrainStackLength(i + 1, options.stackLength);
+    if (i + 1 >= options.stackLength) {
+      applyEffect(options.effect);
+      alignLayers(options.alignLayers);
+      runAction(options.action);
+      saveJpg(outputDir, i);
+      activeDocument.layers[activeDocument.layers.length -1].remove();
+    }
   }
+  alert("Finished Stacking!");
 }
