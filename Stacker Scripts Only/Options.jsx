@@ -5,7 +5,7 @@ var options = {
   blendMode: BlendMode.LIGHTEN,
   effect: "commet",
   stackLength: 32,
-  autoAlign: false,
+  autoAlign: true,
   action: null,
   displacement: 1,
 };
@@ -57,7 +57,7 @@ function renderStackLengthOptions() {
   var panel = renderPanel("Select Stack Length:");
   var group = renderGroup(panel);
   var key = "stackLength";
-  var stackSizes = [2, 8, 16, 32, 64, 115, 128, 256];
+  var stackSizes = [2, 8, 16, 32, 64, 128, 256];
   for (var i in stackSizes) {
     var stackSize = stackSizes[i];
     renderRadioButton(group, key, '' + stackSize, stackSize);
