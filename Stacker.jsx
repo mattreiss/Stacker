@@ -64,7 +64,7 @@ function main() {
   if (!fileList) {
     return;
   }
-  printFileList();
+  // printFileList();
 
   outputDir = getOutputDir();
   if (!outputDir) {

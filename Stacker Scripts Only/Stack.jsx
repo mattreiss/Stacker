@@ -41,12 +41,13 @@ function saveJpg(dir, fileName) {
   app.activeDocument.saveAs(jpgFile, jpgSaveOptions, true, Extension.LOWERCASE);
 }
 
-function addToStack(file, blendMode) {
+function addToStack(file, layerName, blendMode) {
   open(file);
   checkBackground();
   duplicateLayer(app.documents[0].name);
   app.activeDocument.close(SaveOptions.DONOTSAVECHANGES);
   activeDocument.layers[0].blendMode = blendMode;
+  activeDocument.layers[0].name = layerName;
 }
 
 function applyCommetEffect() {
@@ -91,13 +92,16 @@ function stack(fileList, outputDir, options) {
   open(fileList[0]);
   checkBackground();
   for (var i = 1; i < fileList.length; i++) {
-    addToStack(fileList[i], options.blendMode);
+    addToStack(fileList[i], 'Layer ' + i,  options.blendMode);
+    var isLastIndex = i + 1 == fileList.length;
+    var isAtStackLength = i + 1 >= options.stackLength || isLastIndex;
+    if (options.autoAlign && !isAtStackLength) continue;
     applyEffect(options.effect);
-    alignLayers(options.alignLayers);
+    alignLayers(options.autoAlign);
     runAction(options.action);
     activeDocument.layers[activeDocument.layers.length - 1].blendMode = BlendMode.NORMAL;
     saveJpg(outputDir, i);
-    if (i + 1 >= options.stackLength) {
+    if (isAtStackLength && !isLastIndex) {
       activeDocument.layers[activeDocument.layers.length - 1].remove();
     }
   }

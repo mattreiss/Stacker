@@ -1,4 +1,4 @@
-// (c) Copyright 2005-2007  Adobe Systems, Incorporated.  All rights reserved.
+#include "Stacker Scripts Only/Terminology.jsx"
 
 /*
 @@@BUILDINFO@@@ StackSupport.jsx 1.0.0.0
@@ -13,8 +13,6 @@
 // on localized builds we pull the $$$/Strings from a .dat file
 $.localize = true;
 
-if (typeof typeNULL == "undefined")
-    $.evalFile(g_StackScriptFolderPath + "Terminology.jsx");
 
 // Handy debugging function helps you figure out what descriptor keywords are.
 function numToOSType( number )
