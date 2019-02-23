@@ -1,5 +1,6 @@
 #include "Stacker Scripts Only/Options.jsx"
 #include "Stacker Scripts Only/Stack.jsx"
+#include "Stacker Scripts Only/StackSupport.jsx"
 
 var fileList;
 var outputDir;

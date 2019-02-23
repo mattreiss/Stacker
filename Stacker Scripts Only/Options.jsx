@@ -39,6 +39,7 @@ function renderBlendModeOptions() {
   var group = renderGroup(panel);
   var key = "blendMode";
   renderRadioButton(panel, key, 'Lighten', BlendMode.LIGHTEN);
+  renderRadioButton(panel, key, 'Darken', BlendMode.DARKEN);
   renderRadioButton(panel, key, 'Screen', BlendMode.SCREEN);
   renderRadioButton(panel, key, 'Normal', BlendMode.NORMAL);
 }
@@ -55,11 +56,11 @@ function renderStackLengthOptions() {
   var panel = renderPanel("Select Stack Length:");
   var group = renderGroup(panel);
   var key = "stackLength";
-  renderRadioButton(group, key, '15', 15);
-  renderRadioButton(group, key, '30', 30);
-  renderRadioButton(group, key, '60', 60);
-  renderRadioButton(group, key, '120', 120);
-  renderRadioButton(group, key, '240', 240);
+  var stackSizes = [2, 8, 16, 32, 64, 128, 256];
+  for (var i in stackSizes) {
+    var stackSize = stackSizes[i];
+    renderRadioButton(group, key, '' + stackSize, stackSize);
+  }
 }
 
 function renderAutoAlignOptions() {

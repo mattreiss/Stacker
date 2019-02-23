@@ -60,10 +60,9 @@ function applyCommetEffect() {
 
 
 function alignLayers(alignFlag) {
-  if (!alignFlag) {
-    return;
-  }
-
+  if (!alignFlag) return;
+  selectAllLayers() ;
+	alignLayersByContent();
 }
 
 function applyEffect(effect) {
@@ -93,12 +92,13 @@ function stack(fileList, outputDir, options) {
   checkBackground();
   for (var i = 1; i < fileList.length; i++) {
     addToStack(fileList[i], options.blendMode);
+    applyEffect(options.effect);
+    alignLayers(options.alignLayers);
+    runAction(options.action);
+    activeDocument.layers[activeDocument.layers.length - 1].blendMode = BlendMode.NORMAL;
+    saveJpg(outputDir, i);
     if (i + 1 >= options.stackLength) {
-      applyEffect(options.effect);
-      alignLayers(options.alignLayers);
-      runAction(options.action);
-      saveJpg(outputDir, i);
-      activeDocument.layers[activeDocument.layers.length -1].remove();
+      activeDocument.layers[activeDocument.layers.length - 1].remove();
     }
   }
   alert("Finished Stacking!");
