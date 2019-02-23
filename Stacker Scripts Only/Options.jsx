@@ -4,9 +4,10 @@ var process;
 var options = {
   blendMode: BlendMode.LIGHTEN,
   effect: "commet",
-  stackLength: 30,
+  stackLength: 32,
   autoAlign: false,
-  action: null
+  action: null,
+  displacement: 1,
 };
 
 function renderRadioButton(element, key, label, value) {
@@ -71,12 +72,15 @@ function renderAutoAlignOptions() {
   renderRadioButton(group, key, 'off', false);
 }
 
-function renderActionOptions() {
-  var panel = renderPanel("Run Stacker Action:");
+function renderDisplacementOptions() {
+  var panel = renderPanel("Displacement Between Frames:");
   var group = renderGroup(panel);
-  var key = "action";
-  renderRadioButton(group, key, 'Action', 'Action');
-  renderRadioButton(group, key, 'none', null);
+  var key = "displacement";
+  var displacements = [1, 2, 4, 8, 16, 32];
+  for (var i in displacements) {
+    var displacement = displacements[i];
+    renderRadioButton(group, key, '' + displacement, displacement);
+  }
 }
 
 
@@ -103,7 +107,7 @@ function getOptions(cb) {
   renderEffectOptions();
   renderStackLengthOptions();
   renderAutoAlignOptions();
-  renderActionOptions();
+  renderDisplacementOptions();
   renderSubmitButtons();
   window.show();
 }

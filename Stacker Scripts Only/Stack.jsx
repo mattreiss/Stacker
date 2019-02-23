@@ -1,4 +1,3 @@
-
 function checkBackground() {
   activeDocument.activeLayer = activeDocument.layers[activeDocument.layers.length-1];
   if (activeDocument.activeLayer.isBackgroundLayer) {
@@ -41,69 +40,63 @@ function saveJpg(dir, fileName) {
   app.activeDocument.saveAs(jpgFile, jpgSaveOptions, true, Extension.LOWERCASE);
 }
 
-function addToStack(file, layerName, blendMode) {
-  open(file);
-  checkBackground();
-  duplicateLayer(app.documents[0].name);
-  app.activeDocument.close(SaveOptions.DONOTSAVECHANGES);
-  activeDocument.layers[0].blendMode = blendMode;
-  activeDocument.layers[0].name = layerName;
-}
 
-function applyCommetEffect() {
+function applyCommetEffect(options, start, end) {
   var opacity = 100;
-  var increments = 100 / activeDocument.layers.length;
-  for (var i = 0; i < activeDocument.layers.length; i++) {
-    activeDocument.layers[i].opacity = opacity;
+  var increments = 100 / (end - start + 1);
+  for (var index = end; index >= start; index--) {
+    var layer = activeDocument.layers[index];
+    layer.blendMode = index == end ? BlendMode.NORMAL : options.blendMode;
+    layer.visible = true;
+    layer.opacity = opacity;
     opacity -= increments;
   }
 }
 
-
-function alignLayers(alignFlag) {
-  if (!alignFlag) return;
-  selectAllLayers() ;
-	alignLayersByContent();
-}
-
-function applyEffect(effect) {
-  switch (effect) {
-    case "commet": return applyCommetEffect();
+function putFilesIntoLayers(fileList, options) {
+  for (var i = 0; i < fileList.length; i++) {
+    open(fileList[i]);
+    checkBackground();
+    if (i > 0) {
+      duplicateLayer(app.documents[0].name);
+      app.activeDocument.close(SaveOptions.DONOTSAVECHANGES);
+    }
+    var layer = activeDocument.layers[0];
+    layer.visible = false;
+    layer.name = 'Layer ' + i;
+  }
+  if (options.autoAlign) {
+    selectAllLayers();
+  	alignLayersByContent(); // defined in StackSupport.jsx
   }
 }
 
-function runAction(action) {
-  if (!action) return;
-  var idPly = charIDToTypeID( "Ply " );
-  var desc12 = new ActionDescriptor();
-  var idnull = charIDToTypeID( "null" );
-  var ref9 = new ActionReference();
-  var idActn = charIDToTypeID( "Actn" );
-  ref9.putName( idActn, action );
-  var idASet = charIDToTypeID( "ASet" );
-  ref9.putName( idASet, "Stacker" );
-  desc12.putReference( idnull, ref9 );
-  executeAction( idPly, desc12, DialogModes.NO );
-}
-
-
-function stack(fileList, outputDir, options) {
-  alert("Stacking " + fileList.length + " files!")
-  open(fileList[0]);
-  checkBackground();
-  for (var i = 1; i < fileList.length; i++) {
-    addToStack(fileList[i], 'Layer ' + i,  options.blendMode);
-    var isLastIndex = i + 1 == fileList.length;
-    var isAtStackLength = i + 1 >= options.stackLength || isLastIndex;
-    if (options.autoAlign && !isAtStackLength) continue;
-    applyEffect(options.effect);
-    alignLayers(options.autoAlign);
-    runAction(options.action);
-    activeDocument.layers[activeDocument.layers.length - 1].blendMode = BlendMode.NORMAL;
-    saveJpg(outputDir, i);
-    if (isAtStackLength && !isLastIndex) {
-      activeDocument.layers[activeDocument.layers.length - 1].remove();
+function mainLoop(fileList, outputDir, options) {
+  var fileCount = 0;
+  var i = fileList.length - 1;
+  var j = i - options.stackLength;
+  if (j < 0) j = 0;
+  while (j >= 0) {
+    switch (options.effect) {
+      case "commet":
+      default: applyCommetEffect(options, j, i);
+    }
+    fileCount++;
+    saveJpg(outputDir, fileCount);
+    var nextI = i - options.displacement;
+    while (i > nextI) {
+      activeDocument.layers[i].visible = false;
+      i--;
+      j--;
     }
   }
-  alert("Finished Stacking!");
+}
+
+function stack(fileList, outputDir, options) {
+  var time = Date.now();
+  alert("Stacking " + fileList.length + " files!")
+  putFilesIntoLayers(fileList, options);
+  mainLoop(fileList, outputDir, options);
+  time = (Date.now() - time) / (1000 * 60);
+  alert("Finished Stacking in" + parseFloat(time).toFixed(2) + " minutes!");
 }
