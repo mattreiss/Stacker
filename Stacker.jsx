@@ -61,7 +61,7 @@ function printFileList() {
 
 function main() {
   if (app.documents && app.documents.length > 0) {
-    // return alert("Please close all open documents and run the script again!");
+    return alert("Please close all open documents and run the script again!");
   }
 
   fileList = getFileList();
