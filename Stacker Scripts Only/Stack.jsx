@@ -150,7 +150,7 @@ function exportVideo(fileList, options) {
   var idsubdirectory = stringIDToTypeID( "subdirectory" );
   desc2686.putString( idsubdirectory, """video""" );
   var idNm = charIDToTypeID( "Nm  " );
-  desc2686.putString( idNm, """stacker.mp4""" );
+  desc2686.putString( idNm, "stacker-" + options.video + ".mp4" );
   var idameFormatName = stringIDToTypeID( "ameFormatName" );
   desc2686.putString( idameFormatName, """H.264""" );
   var idamePresetName = stringIDToTypeID( "amePresetName" );
