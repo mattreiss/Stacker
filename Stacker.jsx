@@ -15,27 +15,31 @@ function stripOutInteger(o) {
   return parseInt(r);
 }
 
+function readFileList(folder) {
+  var selectedFileList = folder.getFiles(/\.(jpg|jpeg|cr2|ARW|psd)$/i);
+  if (!selectedFileList || selectedFileList.length < 2) {
+    return alert("Please select a folder with 2 or more files you want to stack");
+  }
+  var filteredFileList = [];
+  var uniqueFiles = {};
+  for (var i in selectedFileList) {
+    var file = selectedFileList[i];
+    if (!uniqueFiles[stripOutInteger(file)]) {
+      uniqueFiles[stripOutInteger(file)] = true;
+      var cleanFile = File(String(file).replace("._", ""));
+      filteredFileList.push(cleanFile);
+    }
+  }
+  filteredFileList.sort(function(a, b) {
+    return stripOutInteger(a) - stripOutInteger(b);
+  });
+  return filteredFileList;
+}
+
 function getFileList() {
   var selectedFolder = Folder.selectDialog( "Please select input folder");
   if (selectedFolder !== null)  {
-    var selectedFileList = selectedFolder.getFiles(/\.(jpg|jpeg|cr2|ARW|psd)$/i);
-    if (!selectedFileList || selectedFileList.length < 2) {
-      return alert("Please select a folder with 2 or more files you want to stack");
-    }
-    var filteredFileList = [];
-    var uniqueFiles = {};
-    for (var i in selectedFileList) {
-      var file = selectedFileList[i];
-      if (!uniqueFiles[stripOutInteger(file)]) {
-        uniqueFiles[stripOutInteger(file)] = true;
-        var cleanFile = File(String(file).replace("._", ""));
-        filteredFileList.push(cleanFile);
-      }
-    }
-    filteredFileList.sort(function(a, b) {
-      return stripOutInteger(a) - stripOutInteger(b);
-    });
-    return filteredFileList;
+    return readFileList(selectedFolder);
   }
 }
 
@@ -57,7 +61,7 @@ function printFileList() {
 
 function main() {
   if (app.documents && app.documents.length > 0) {
-    return alert("Please close all open documents and run the script again!");
+    // return alert("Please close all open documents and run the script again!");
   }
 
   fileList = getFileList();
@@ -73,7 +77,15 @@ function main() {
 
   // call imported functions
   getOptions(function(options) {
+    var time = Date.now();
+    alert("Stacking " + fileList.length + " files!")
     stack(fileList, outputDir, options);
+    if (options.video) {
+      fileList = readFileList(outputDir);
+      exportVideo(fileList, options)
+    }
+    time = (Date.now() - time) / (1000 * 60);
+    alert("Finished Stacking in " + parseFloat(time).toFixed(2) + " minutes!");
   });
 }
 
