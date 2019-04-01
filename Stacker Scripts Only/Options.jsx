@@ -4,9 +4,11 @@ var process;
 var options = {
   blendMode: BlendMode.LIGHTEN,
   effect: "commet",
-  stackLength: 30,
+  stackLength: 32,
   autoAlign: false,
-  action: null
+  action: null,
+  displacement: 1,
+  fps: 24.000000
 };
 
 function renderRadioButton(element, key, label, value) {
@@ -56,7 +58,7 @@ function renderStackLengthOptions() {
   var panel = renderPanel("Select Stack Length:");
   var group = renderGroup(panel);
   var key = "stackLength";
-  var stackSizes = [2, 8, 16, 32, 64, 115, 128, 256];
+  var stackSizes = [4, 8, 16, 32, 64, 128, 256, 512];
   for (var i in stackSizes) {
     var stackSize = stackSizes[i];
     renderRadioButton(group, key, '' + stackSize, stackSize);
@@ -71,14 +73,30 @@ function renderAutoAlignOptions() {
   renderRadioButton(group, key, 'off', false);
 }
 
-function renderActionOptions() {
-  var panel = renderPanel("Run Stacker Action:");
+function renderDisplacementOptions() {
+  var panel = renderPanel("Displacement Between Frames:");
   var group = renderGroup(panel);
-  var key = "action";
-  renderRadioButton(group, key, 'Action', 'Action');
-  renderRadioButton(group, key, 'none', null);
+  var key = "displacement";
+  var displacements = [1, 2, 4, 8, 16, 32];
+  for (var i in displacements) {
+    var displacement = displacements[i];
+    renderRadioButton(group, key, '' + displacement, displacement);
+  }
 }
 
+function renderVideoOptions() {
+  var panel = renderPanel("Export Video:");
+  var group = renderGroup(panel);
+  var key = "video";
+  renderRadioButton(group, key, 'none', null);
+  renderRadioButton(group, key, '720p @24fps', '720@24');
+  renderRadioButton(group, key, '720p @30fps', '720@30');
+  renderRadioButton(group, key, '720p @60fps', '720@60');
+  renderRadioButton(group, key, '1080p @24fps', '1080@24');
+  renderRadioButton(group, key, '1080p @30fps', '1080@30');
+  renderRadioButton(group, key, '1080p @60fps', '1080@60');
+  renderRadioButton(group, key, '2304p @24fps', '2304@24');
+}
 
 function renderSubmitButtons() {
   var group = window.add('group');
@@ -103,7 +121,8 @@ function getOptions(cb) {
   renderEffectOptions();
   renderStackLengthOptions();
   renderAutoAlignOptions();
-  renderActionOptions();
+  renderDisplacementOptions();
+  renderVideoOptions();
   renderSubmitButtons();
   window.show();
 }

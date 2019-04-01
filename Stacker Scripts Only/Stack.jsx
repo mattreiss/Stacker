@@ -1,10 +1,16 @@
-
 function checkBackground() {
   activeDocument.activeLayer = activeDocument.layers[activeDocument.layers.length-1];
   if (activeDocument.activeLayer.isBackgroundLayer) {
     activeDocument.activeLayer.name=activeDocument.activeLayer.name;
   }
 }
+
+function deleteLayer(layer) {
+  if(!layer.visisible) layer.visible = true;
+  if(layer.locked) layer.locked = false;
+  layer.remove();
+}
+
 
 function mergeLayers() {
   selectAllLayers() ;
@@ -31,6 +37,7 @@ function selectAllLayers() {
   executeAction( stringIDToTypeID('selectAllLayers'), desc, DialogModes.NO );
 }
 
+
 function saveJpg(dir, fileName) {
   var jpgFile = new File(dir + '/' + fileName + '.jpg');
   jpgSaveOptions = new JPEGSaveOptions();
@@ -41,69 +48,164 @@ function saveJpg(dir, fileName) {
   app.activeDocument.saveAs(jpgFile, jpgSaveOptions, true, Extension.LOWERCASE);
 }
 
-function addToStack(file, layerName, blendMode) {
-  open(file);
-  checkBackground();
-  duplicateLayer(app.documents[0].name);
-  app.activeDocument.close(SaveOptions.DONOTSAVECHANGES);
-  activeDocument.layers[0].blendMode = blendMode;
-  activeDocument.layers[0].name = layerName;
-}
 
-function applyCommetEffect() {
+function applyCommetEffect(options, start, end) {
   var opacity = 100;
-  var increments = 100 / activeDocument.layers.length;
-  for (var i = 0; i < activeDocument.layers.length; i++) {
-    activeDocument.layers[i].opacity = opacity;
+  var increments = 100 / (end - start + 1);
+  for (var index = start; index <= end; index++) {
+    var layer = activeDocument.layers[index];
+    layer.blendMode = index == end ? BlendMode.NORMAL : options.blendMode;
+    layer.visible = true;
+    layer.opacity = opacity;
     opacity -= increments;
   }
 }
 
-
-function alignLayers(alignFlag) {
-  if (!alignFlag) return;
-  selectAllLayers() ;
-	alignLayersByContent();
+function setLayerLocked(layer, isLocked) {
+  layer.allLocked = isLocked;
+  layer.pixelsLocked = isLocked;
+  layer.positionLocked = isLocked;
+  layer.transparentPixelsLocked = isLocked;
 }
 
-function applyEffect(effect) {
-  switch (effect) {
-    case "commet": return applyCommetEffect();
+function selectSingleLayer(layer) {
+  var idslct = charIDToTypeID( "slct" );
+  var desc8 = new ActionDescriptor();
+  var idnull = charIDToTypeID( "null" );
+  var ref3 = new ActionReference();
+  var idLyr = charIDToTypeID( "Lyr " );
+  ref3.putName( idLyr, layer.name );
+  desc8.putReference( idnull, ref3 );
+  var idMkVs = charIDToTypeID( "MkVs" );
+  desc8.putBoolean( idMkVs, false );
+  executeAction( idslct, desc8, DialogModes.NO );
+}
+
+function addToLayerSelection(layer) {
+  var idslct = charIDToTypeID( "slct" );
+  var desc18 = new ActionDescriptor();
+  var idnull = charIDToTypeID( "null" );
+  var ref11 = new ActionReference();
+  var idLyr = charIDToTypeID( "Lyr " );
+  ref11.putName( idLyr, layer.name );
+  desc18.putReference( idnull, ref11 );
+  var idselectionModifier = stringIDToTypeID( "selectionModifier" );
+  var idselectionModifierType = stringIDToTypeID( "selectionModifierType" );
+  var idaddToSelection = stringIDToTypeID( "addToSelection" );
+  desc18.putEnumerated( idselectionModifier, idselectionModifierType, idaddToSelection );
+  var idMkVs = charIDToTypeID( "MkVs" );
+  desc18.putBoolean( idMkVs, false );
+  executeAction( idslct, desc18, DialogModes.NO );
+}
+
+function putFilesIntoLayers(fileList, options, keepVisible) {
+  for (var i = 0; i < fileList.length; i++) {
+    open(fileList[i]);
+    checkBackground();
+    if (i > 0) {
+      duplicateLayer(app.documents[0].name);
+      app.activeDocument.close(SaveOptions.DONOTSAVECHANGES);
+    }
+    var layer = activeDocument.layers[0];
+    layer.name = 'Layer ' + i;
+    layer.visible = keepVisible || false;
+  }
+  if (options.autoAlign) {
+    selectAllLayers();
+    alignLayersByContent(); // defined in StackSupport.jsx
   }
 }
 
-function runAction(action) {
-  if (!action) return;
-  var idPly = charIDToTypeID( "Ply " );
-  var desc12 = new ActionDescriptor();
-  var idnull = charIDToTypeID( "null" );
-  var ref9 = new ActionReference();
-  var idActn = charIDToTypeID( "Actn" );
-  ref9.putName( idActn, action );
-  var idASet = charIDToTypeID( "ASet" );
-  ref9.putName( idASet, "Stacker" );
-  desc12.putReference( idnull, ref9 );
-  executeAction( idPly, desc12, DialogModes.NO );
+function putLayersIntoTimeline() {
+  var idmakeFrameAnimation = stringIDToTypeID( "makeFrameAnimation" );
+  executeAction( idmakeFrameAnimation, undefined, DialogModes.NO );
+  var idanimationFramesFromLayers = stringIDToTypeID( "animationFramesFromLayers" );
+  var desc2665 = new ActionDescriptor();
+  executeAction( idanimationFramesFromLayers, desc2665, DialogModes.NO );
+
 }
 
-
-function stack(fileList, outputDir, options) {
-  alert("Stacking " + fileList.length + " files!")
-  open(fileList[0]);
-  checkBackground();
-  for (var i = 1; i < fileList.length; i++) {
-    addToStack(fileList[i], 'Layer ' + i,  options.blendMode);
-    var isLastIndex = i + 1 == fileList.length;
-    var isAtStackLength = i + 1 >= options.stackLength || isLastIndex;
-    if (options.autoAlign && !isAtStackLength) continue;
-    applyEffect(options.effect);
-    alignLayers(options.autoAlign);
-    runAction(options.action);
-    activeDocument.layers[activeDocument.layers.length - 1].blendMode = BlendMode.NORMAL;
-    saveJpg(outputDir, i);
-    if (isAtStackLength && !isLastIndex) {
-      activeDocument.layers[activeDocument.layers.length - 1].remove();
+function exportVideo(fileList, options) {
+  app.activeDocument.close(SaveOptions.DONOTSAVECHANGES);
+  putFilesIntoLayers(fileList, options, true);
+  var video = options.video.split("@");
+  var height = parseInt(video[0]);
+  var fps = parseInt(video[1]);
+  function getWidth() {
+    switch(height) {
+      case 2304: return 3936;
+      case 1080: return 1920;
+      case 720: return 1280;
     }
   }
-  alert("Finished Stacking!");
+  var width = getWidth();
+
+  putLayersIntoTimeline();
+  var idExpr = charIDToTypeID( "Expr" );
+  var desc2685 = new ActionDescriptor();
+  var idUsng = charIDToTypeID( "Usng" );
+  var desc2686 = new ActionDescriptor();
+  var iddirectory = stringIDToTypeID( "directory" );
+  desc2686.putPath( iddirectory, new File( outputDir ) );
+  var idsubdirectory = stringIDToTypeID( "subdirectory" );
+  desc2686.putString( idsubdirectory, """video""" );
+  var idNm = charIDToTypeID( "Nm  " );
+  desc2686.putString( idNm, "stacker-" + options.video + ".mp4" );
+  var idameFormatName = stringIDToTypeID( "ameFormatName" );
+  desc2686.putString( idameFormatName, """H.264""" );
+  var idamePresetName = stringIDToTypeID( "amePresetName" );
+  desc2686.putString( idamePresetName, """1_High Quality.epr""" );
+  var idWdth = charIDToTypeID( "Wdth" );
+  desc2686.putInteger( idWdth, width );
+  var idHght = charIDToTypeID( "Hght" );
+  desc2686.putInteger( idHght, height );
+  var idframeRate = stringIDToTypeID( "frameRate" );
+  desc2686.putDouble( idframeRate, fps );
+  var idpixelAspectRatio = stringIDToTypeID( "pixelAspectRatio" );
+  var idpixelAspectRatio = stringIDToTypeID( "pixelAspectRatio" );
+  var idDcmn = charIDToTypeID( "Dcmn" );
+  desc2686.putEnumerated( idpixelAspectRatio, idpixelAspectRatio, idDcmn );
+  var idfieldOrder = stringIDToTypeID( "fieldOrder" );
+  var idvideoField = stringIDToTypeID( "videoField" );
+  var idpreset = stringIDToTypeID( "preset" );
+  desc2686.putEnumerated( idfieldOrder, idvideoField, idpreset );
+  var idmanage = stringIDToTypeID( "manage" );
+  desc2686.putBoolean( idmanage, true );
+  var idallFrames = stringIDToTypeID( "allFrames" );
+  desc2686.putBoolean( idallFrames, true );
+  var idrenderAlpha = stringIDToTypeID( "renderAlpha" );
+  var idalphaRendering = stringIDToTypeID( "alphaRendering" );
+  var idNone = charIDToTypeID( "None" );
+  desc2686.putEnumerated( idrenderAlpha, idalphaRendering, idNone );
+  var idQlty = charIDToTypeID( "Qlty" );
+  desc2686.putInteger( idQlty, 1 );
+  var idvideoExport = stringIDToTypeID( "videoExport" );
+  desc2685.putObject( idUsng, idvideoExport, desc2686 );
+  executeAction( idExpr, desc2685, DialogModes.NO );
+}
+
+function mainLoop(fileList, outputDir, options) {
+  var fileCount = 0;
+  var i = fileList.length - 1;
+  var j = i - options.stackLength;
+  if (j < 0) j = 0;
+  while (j >= 0) {
+    switch (options.effect) {
+      case "commet":
+      default: applyCommetEffect(options, j, i);
+    }
+    fileCount++;
+    saveJpg(outputDir, fileCount);
+    var nextI = i - options.displacement;
+    while (i > nextI) {
+      activeDocument.layers[i].visible = false;
+      i--;
+      j--;
+    }
+  }
+}
+
+function stack(fileList, outputDir, options) {
+  putFilesIntoLayers(fileList, options);
+  mainLoop(fileList, outputDir, options);
 }
