@@ -141,6 +141,7 @@ function exportVideo(fileList, options) {
   var width = getWidth();
 
   putLayersIntoTimeline();
+
   var idExpr = charIDToTypeID( "Expr" );
   var desc2685 = new ActionDescriptor();
   var idUsng = charIDToTypeID( "Usng" );
@@ -191,6 +192,7 @@ function mainLoop(fileList, outputDir, options) {
   if (j < 0) j = 0;
   while (j >= 0) {
     switch (options.effect) {
+      case 'normal': break;
       case "commet":
       default: applyCommetEffect(options, j, i);
     }
