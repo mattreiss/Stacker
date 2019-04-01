@@ -958,6 +958,7 @@ function selectOneLayer(doc, layer)
 	executeAction( eventSelect, desc, DialogModes.NO );
 }
 
+
 // Align selected layers by content (uses SIFT registration in Photoshop core)
 // Potential DOM FIX
 function alignLayersByContent( alignMethod )
