@@ -49,6 +49,16 @@ function saveJpg(dir, fileName) {
 }
 
 
+function applyNormalEffect(options, start, end) {
+  var opacity = 100;
+  for (var index = start; index <= end; index++) {
+    var layer = activeDocument.layers[index];
+    layer.blendMode = index == end ? BlendMode.NORMAL : options.blendMode;
+    layer.visible = true;
+    layer.opacity = 100;
+  }
+}
+
 function applyCommetEffect(options, start, end) {
   var opacity = 100;
   var increments = 100 / (end - start + 1);
@@ -199,7 +209,7 @@ function exportVideo(fileList, options) {
 
 function applyEffect(options, i, j) {
   switch (options.effect) {
-    case 'normal': return;
+    case 'normal': return applyNormalEffect(options, j, i);
     case 'reverseCommet': return applyReverseCommetEffect(options, j, i);
     case "commet": return applyCommetEffect(options, j, i);
   }
