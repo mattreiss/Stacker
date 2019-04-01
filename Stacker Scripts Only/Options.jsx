@@ -5,6 +5,7 @@ var options = {
   blendMode: BlendMode.LIGHTEN,
   effect: "commet",
   stackLength: 32,
+  stackGrowth: false,
   autoAlign: false,
   action: null,
   displacement: 1,
@@ -51,6 +52,7 @@ function renderEffectOptions() {
   var group = renderGroup(panel);
   var key = "effect";
   renderRadioButton(group, key, 'Commet', 'commet');
+  renderRadioButton(group, key, 'Reverse Commet', 'reverseCommet');
   renderRadioButton(group, key, 'Normal', 'normal');
 }
 
@@ -63,6 +65,14 @@ function renderStackLengthOptions() {
     var stackSize = stackSizes[i];
     renderRadioButton(group, key, '' + stackSize, stackSize);
   }
+}
+
+function renderStackGrowthOptions() {
+  var panel = renderPanel("Show Stack Growth:");
+  var group = renderGroup(panel);
+  var key = "stackGrowth";
+  renderRadioButton(group, key, 'on', true);
+  renderRadioButton(group, key, 'off', false);
 }
 
 function renderAutoAlignOptions() {
@@ -120,6 +130,7 @@ function getOptions(cb) {
   renderBlendModeOptions();
   renderEffectOptions();
   renderStackLengthOptions();
+  renderStackGrowthOptions()
   renderAutoAlignOptions();
   renderDisplacementOptions();
   renderVideoOptions();
