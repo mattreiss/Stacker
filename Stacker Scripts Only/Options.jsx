@@ -141,6 +141,7 @@ function getOptions(cb) {
   renderStackGrowthOptions()
   renderAutoAlignOptions();
   renderDisplacementOptions();
+  renderActionOptions();
   renderVideoOptions();
   renderSubmitButtons();
   window.show();
