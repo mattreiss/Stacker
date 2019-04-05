@@ -17,6 +17,21 @@ function mergeLayers() {
   activeDocument.activeLayer.merge();
 }
 
+
+function runAction(action) {
+  if (!action) return;
+  var idPly = charIDToTypeID( "Ply " );
+  var desc12 = new ActionDescriptor();
+  var idnull = charIDToTypeID( "null" );
+  var ref9 = new ActionReference();
+  var idActn = charIDToTypeID( "Actn" );
+  ref9.putName( idActn, action );
+  var idASet = charIDToTypeID( "ASet" );
+  ref9.putName( idASet, "Stacker" );
+  desc12.putReference( idnull, ref9 );
+  executeAction( idPly, desc12, DialogModes.NO );
+}
+
 function duplicateLayer(DocName) {
   var desc = new ActionDescriptor();
   var ref = new ActionReference();
@@ -123,6 +138,9 @@ function addToLayerSelection(layer) {
 function putFilesIntoLayers(fileList, options, keepVisible) {
   for (var i = 0; i < fileList.length; i++) {
     open(fileList[i]);
+    if (!keepVisible) {
+      runAction(options.action)
+    }
     checkBackground();
     if (i > 0) {
       duplicateLayer(app.documents[0].name);

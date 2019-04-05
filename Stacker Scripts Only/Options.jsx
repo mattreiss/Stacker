@@ -37,6 +37,14 @@ function renderGroup(element) {
   return group;
 }
 
+function renderActionOptions() {
+  var panel = renderPanel("Run Stacker Action:");
+  var group = renderGroup(panel);
+  var key = "action";
+  renderRadioButton(group, key, 'Action', 'Action');
+  renderRadioButton(group, key, 'none', null);
+}
+
 function renderBlendModeOptions() {
   var panel = renderPanel("Select Blend Mode:", 200, 60);
   var group = renderGroup(panel);
