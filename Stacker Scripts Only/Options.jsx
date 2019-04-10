@@ -68,7 +68,7 @@ function renderStackLengthOptions() {
   var panel = renderPanel("Select Stack Length:");
   var group = renderGroup(panel);
   var key = "stackLength";
-  var stackSizes = [4, 8, 16, 32, 64, 128, 256, 512];
+  var stackSizes = [1, 4, 8, 16, 32, 64, 128, 256];
   for (var i in stackSizes) {
     var stackSize = stackSizes[i];
     renderRadioButton(group, key, '' + stackSize, stackSize);

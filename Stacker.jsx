@@ -67,7 +67,7 @@ function main() {
   fileList = getFileList();
   if (!fileList) {
     return;
-  } 
+  }
   // printFileList();
 
   outputDir = getOutputDir();
@@ -80,9 +80,9 @@ function main() {
     var time = Date.now();
     alert("Stacking " + fileList.length + " files!")
     stack(fileList, outputDir, options);
-    if (options.video) {
+    if (options.video) { // export stacked timelapse video
       fileList = readFileList(outputDir);
-      exportVideo(fileList, options)
+      exportVideo(fileList, options, outputDir, true);
     }
     time = (Date.now() - time) / (1000 * 60);
     alert("Finished Stacking in " + parseFloat(time).toFixed(2) + " minutes!");
