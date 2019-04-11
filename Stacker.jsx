@@ -36,13 +36,6 @@ function readFileList(folder) {
   return filteredFileList;
 }
 
-function getFileList() {
-  var selectedFolder = Folder.selectDialog( "Please select input folder");
-  if (selectedFolder !== null)  {
-    return readFileList(selectedFolder);
-  }
-}
-
 function getOutputDir() {
   return Folder.selectDialog( "Please select an output folder");
 }
@@ -64,24 +57,26 @@ function main() {
     return alert("Please close all open documents and run the script again!");
   }
 
-  fileList = getFileList();
-  if (!fileList) {
-    return;
+  var selectedFolder = Folder.selectDialog( "Please select input folder");
+  if (selectedFolder !== null)  {
+    fileList = readFileList(selectedFolder);
   }
-  // printFileList();
-
-  outputDir = getOutputDir();
-  if (!outputDir) {
+  if (!fileList) {
     return;
   }
 
   // call imported functions
   getOptions(function(options) {
+    outputDir = selectedFolder + "/stacks-" + options.stackLength;
+    var f = new Folder(outputDir);
+    if (!f.exists) {
+    	f.create()
+    }
     var time = Date.now();
     alert("Stacking " + fileList.length + " files!")
     stack(fileList, outputDir, options);
     if (options.video) { // export stacked timelapse video
-      fileList = readFileList(outputDir);
+      fileList = readFileList(new Folder(outputDir + "/jpg"));
       exportVideo(fileList, options, outputDir, true);
     }
     time = (Date.now() - time) / (1000 * 60);

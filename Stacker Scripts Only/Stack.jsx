@@ -54,7 +54,11 @@ function selectAllLayers() {
 
 
 function saveJpg(dir, fileName) {
-  var jpgFile = new File(dir + '/' + fileName + '.jpg');
+  var jpgFolder = new Folder(dir + "/jpg");
+  if (!jpgFolder.exists) {
+    jpgFolder.create()
+  }
+  var jpgFile = new File(dir + '/jpg/' + fileName + '.jpg');
   jpgSaveOptions = new JPEGSaveOptions();
   jpgSaveOptions.embedColorProfile = true;
   jpgSaveOptions.formatOptions = FormatOptions.STANDARDBASELINE;
@@ -231,17 +235,24 @@ function exportVideo(fileList, options, outputDir, isExportingStacks) {
   }
   var width = getWidth();
 
+  putLayersIntoTimeline()
+
+  var mp4Folder = new Folder(outputDir + "/mp4");
+  if (!mp4Folder.exists) {
+    mp4Folder.create()
+  }
+
   var idExpr = charIDToTypeID( "Expr" );
     var desc4 = new ActionDescriptor();
     var idUsng = charIDToTypeID( "Usng" );
         var desc5 = new ActionDescriptor();
         var iddirectory = stringIDToTypeID( "directory" );
-        desc5.putPath( iddirectory, new File( outputDir ) );
+        desc5.putPath( iddirectory, mp4Folder );
         var idNm = charIDToTypeID( "Nm  " );
         if (!isExportingStacks) {
           desc5.putString( idNm, "original-" + options.video + ".mp4" );
         } else {
-          desc5.putString( idNm, "stacker-" + options.video + ".mp4" );
+          desc5.putString( idNm, "stacked-" + options.video + ".mp4" );
         }
         var idameFormatName = stringIDToTypeID( "ameFormatName" );
         desc5.putString( idameFormatName, """H.264""" );
@@ -289,7 +300,7 @@ function processStacks(fileList, outputDir, options) {
   var fileCount = 0;
   var i = fileList.length - 1;
   if (options.stackGrowth) {
-    for (var j = i - 1; j > i - options.stackLength && i > 0; j -= options.displacement) {
+    for (var j = i - 1; j > i - options.stackLength && i > 0 && j >= 0; j -= options.displacement) {
       applyEffect(options, i, j);
       fileCount++;
       saveJpg(outputDir, fileCount);

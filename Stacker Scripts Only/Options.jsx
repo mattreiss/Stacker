@@ -5,11 +5,11 @@ var options = {
   blendMode: BlendMode.LIGHTEN,
   effect: "commet",
   stackLength: 32,
-  stackGrowth: false,
+  stackGrowth: true,
   autoAlign: false,
   action: null,
   displacement: 1,
-  fps: 24.000000
+  video: "1080@24"
 };
 
 function renderRadioButton(element, key, label, value) {
