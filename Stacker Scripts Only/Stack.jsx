@@ -299,23 +299,26 @@ function processStacks(fileList, outputDir, options) {
   if (options.stackLength == 1) return;
   var fileCount = 0;
   var i = fileList.length - 1;
-  if (options.stackGrowth) {
-    for (var j = i - 1; j > i - options.stackLength && i > 0 && j >= 0; j -= options.displacement) {
-      applyEffect(options, i, j);
-      fileCount++;
-      saveJpg(outputDir, fileCount);
-      if (fileCount % 2 == 0) {
-        var nextI = i - options.displacement;
-        while (i > nextI) {
-          activeDocument.layers[i].visible = false;
-          i--;
-        }
+  var hasGrowth = "13".indexOf(options.stackGrowth) != -1
+  var hasDecay = "23".indexOf(options.stackGrowth) != -1
+  // loop for growth trail
+  for (var j = i - 1; hasGrowth && j > i - options.stackLength && i > 0 && j >= 0; j -= options.displacement) {
+    applyEffect(options, i, j);
+    fileCount++;
+    saveJpg(outputDir, fileCount);
+    if (fileCount % 2 == 0) {
+      var nextI = i - options.displacement;
+      while (i > nextI) {
+        activeDocument.layers[i].visible = false;
+        i--;
       }
     }
   }
   var j = i - options.stackLength;
-  if (j < 0) j = 0;
-  while (j >= 0) {
+  var end = hasDecay ? options.stackLength * options.displacement / 2 : 0
+  if (j < end) j = end;
+  // loop for normal trail
+  while (j >= end) {
     applyEffect(options, i, j);
     fileCount++;
     saveJpg(outputDir, fileCount);
@@ -324,6 +327,22 @@ function processStacks(fileList, outputDir, options) {
       activeDocument.layers[i].visible = false;
       i--;
       j--;
+    }
+  }
+  // loop for decay trail
+  while (hasDecay && i > j && i > 0) {
+    applyEffect(options, i, j);
+    fileCount++;
+    saveJpg(outputDir, fileCount);
+    if (fileCount % 2 == 0) {
+      j -= options.displacement;
+    }
+    if (j < 0) j = 0;
+    var nextI = i - options.displacement;
+    if (nextI < j) nextI = j
+    while (i > nextI) {
+      activeDocument.layers[i].visible = false;
+      i--;
     }
   }
 }

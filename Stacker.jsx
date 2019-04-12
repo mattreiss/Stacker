@@ -67,7 +67,7 @@ function main() {
 
   // call imported functions
   getOptions(function(options) {
-    outputDir = selectedFolder + "/stacks-" + options.stackLength;
+    outputDir = selectedFolder + "/stacks-of-" + options.stackLength;
     var f = new Folder(outputDir);
     if (!f.exists) {
     	f.create()

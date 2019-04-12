@@ -5,7 +5,7 @@ var options = {
   blendMode: BlendMode.LIGHTEN,
   effect: "commet",
   stackLength: 32,
-  stackGrowth: true,
+  stackGrowth: 3,
   autoAlign: false,
   action: null,
   displacement: 1,
@@ -79,8 +79,10 @@ function renderStackGrowthOptions() {
   var panel = renderPanel("Show Stack Growth:");
   var group = renderGroup(panel);
   var key = "stackGrowth";
-  renderRadioButton(group, key, 'on', true);
-  renderRadioButton(group, key, 'off', false);
+  renderRadioButton(group, key, 'growth only', 1);
+  renderRadioButton(group, key, 'decay only', 2);
+  renderRadioButton(group, key, 'growth and decay', 3);
+  renderRadioButton(group, key, 'none', null);
 }
 
 function renderAutoAlignOptions() {
