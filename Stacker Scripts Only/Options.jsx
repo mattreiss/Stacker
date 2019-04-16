@@ -4,12 +4,13 @@ var process;
 var options = {
   blendMode: BlendMode.LIGHTEN,
   effect: "commet",
-  stackLength: 32,
+  stackLength: 60,
   stackGrowth: 3,
   autoAlign: false,
   action: null,
   displacement: 1,
-  video: "1080@24"
+  video: "1080@24",
+  delayLength: 0,
 };
 
 function renderRadioButton(element, key, label, value) {

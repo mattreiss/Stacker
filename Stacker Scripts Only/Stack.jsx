@@ -287,6 +287,14 @@ function exportVideo(fileList, options, outputDir, isExportingStacks) {
 executeAction( idExpr, desc4, DialogModes.NO );
 }
 
+function hideLayers(i, j) {
+  var end = j && j < activeDocument.layers.length ? j : activeDocument.layers.length;
+  for (var index = i; index < end; index++) {
+    var layer = activeDocument.layers[index];
+    layer.visible = false;
+  }
+}
+
 function applyEffect(options, i, j) {
   switch (options.effect) {
     case 'normal': return applyNormalEffect(options, j, i);
@@ -295,61 +303,86 @@ function applyEffect(options, i, j) {
   }
 }
 
-function processStacks(fileList, outputDir, options) {
-  if (options.stackLength == 1) return;
-  var fileCount = 0;
-  var i = fileList.length - 1;
-  var hasGrowth = "13".indexOf(options.stackGrowth) != -1
-  var hasDecay = "23".indexOf(options.stackGrowth) != -1
-  // loop for growth trail
-  for (var j = i - 1; hasGrowth && j > i - options.stackLength && i > 0 && j >= 0; j -= options.displacement) {
-    applyEffect(options, i, j);
-    fileCount++;
-    saveJpg(outputDir, fileCount);
-    if (fileCount % 2 == 0) {
-      var nextI = i - options.displacement;
-      while (i > nextI) {
-        activeDocument.layers[i].visible = false;
-        i--;
-      }
-    }
+/**
+Create an array of indecies to stack, e.g [{i,j},{i,j},{i,j}]
+**/
+function createStackArray(fileList, options) {
+  var growthList = [];
+  var constantList = [];
+  var decayList = [];
+  var hasGrowth = "13".indexOf(options.stackGrowth) != -1;
+  var hasDecay = "23".indexOf(options.stackGrowth) != -1;
+  var hasOverlap = hasGrowth && hasDecay && fileList.length < (options.stackLength * 3);
+  var growEvery = 2;
+  if (hasOverlap) {
+    alert("Warning: The stack length of " + options.stackLength + " is not obtainable with only " + fileList.length + " files. The rate of change will be increased.");
+    // options.displacement++;
+    growEvery = 3;
   }
-  var j = i - options.stackLength;
-  var end = hasDecay ? options.stackLength * options.displacement / 2 : 0
-  if (j < end) j = end;
-  // loop for normal trail
-  while (j >= end) {
-    applyEffect(options, i, j);
-    fileCount++;
-    saveJpg(outputDir, fileCount);
-    var nextI = i - options.displacement;
-    while (i > nextI) {
-      activeDocument.layers[i].visible = false;
-      i--;
-      j--;
-    }
-  }
-  // loop for decay trail
-  while (hasDecay && i > j && i > 0) {
-    applyEffect(options, i, j);
-    fileCount++;
-    saveJpg(outputDir, fileCount);
-    if (fileCount % 2 == 0) {
+  var start = fileList.length - 1;
+  var end = 0;
+  if (hasGrowth) {
+    var i = start;
+    var j = i - 1;
+    var count = 0;
+    while (i - j < options.stackLength && j >= 0) {
+      growthList.push({i:i,j:j})
       j -= options.displacement;
+      count++;
+      if (count % growEvery == 0) i--;
     }
-    if (j < 0) j = 0;
-    var nextI = i - options.displacement;
-    if (nextI < j) nextI = j
-    while (i > nextI) {
-      activeDocument.layers[i].visible = false;
-      i--;
+    start = i;
+    if (j == 0) {
+      alert("Warning: The stack length of " + options.stackLength + " is not obtainable with only " + fileList.length + " files");
+      return growthList;
     }
   }
+  if (hasDecay) {
+    var j = end;
+    var i = j + 1;
+    var count = 0;
+    while (i - j <= options.stackLength && i < fileList.length) {
+      decayList.push({i:i,j:j})
+      i += options.displacement;
+      count++;
+      if (count % growEvery == 0) j++;
+    }
+    end = (count % growEvery != 0) ? j + 1 : j;
+    if (i == fileList.length) {
+      alert("Warning: The stack length of " + options.stackLength + " is not obtainable with only " + fileList.length + " files");
+      return decayList;
+    }
+  }
+  var i = start;
+  var j = i - options.stackLength;
+  if (j < end) {
+    end = 0;
+    decayList = [];
+    alert("Warning: The stack length of " + options.stackLength + " is not obtainable for growth and decay with only " + fileList.length + " files. Result will only have growth.");
+  }
+  while (j >= end) {
+    constantList.push({i:i,j:j});
+    i -= options.displacement;
+    j -= options.displacement;
+  }
+  return growthList.concat(constantList).concat(decayList.reverse());
 }
 
 function stack(fileList, outputDir, options) {
   putFilesIntoLayers(fileList, options);
-  processStacks(fileList, outputDir, options);
+  var array = createStackArray(fileList, options);
+  var fileCount = 1;
+  var arrayString = "";
+  for (var k in array) {
+    var i = array[k].i;
+    var j = array[k].j;
+    arrayString += "\"i:" + i;
+    arrayString += " - j:" + j + "\",";
+    applyEffect(options, i, j);
+    saveJpg(outputDir, fileCount);
+    hideLayers(i, i + options.displacement);
+    fileCount++;
+  }
   if (options.video) { // export original timelapse video
     restoreDefaultLayers(0, fileList.length - 1);
     exportVideo(fileList, options, outputDir, false)
