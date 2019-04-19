@@ -4,8 +4,8 @@ var process;
 var options = {
   blendMode: BlendMode.LIGHTEN,
   effect: "commet",
-  stackLength: 60,
-  stackGrowth: 3,
+  stackLength: 32,
+  stackGrowth: 1,
   autoAlign: false,
   action: null,
   displacement: 1,

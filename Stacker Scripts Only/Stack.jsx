@@ -358,7 +358,8 @@ function createStackArray(fileList, options) {
   if (j < end) {
     end = 0;
     decayList = [];
-    alert("Warning: The stack length of " + options.stackLength + " is not obtainable for growth and decay with only " + fileList.length + " files. Result will only have growth.");
+    var c = confirm("Warning: The stack length of " + options.stackLength + " is not obtainable for growth and decay with only " + fileList.length + " files. Result will only have growth, continue?");
+    if (!c) return null;
   }
   while (j >= end) {
     constantList.push({i:i,j:j});
@@ -369,8 +370,9 @@ function createStackArray(fileList, options) {
 }
 
 function stack(fileList, outputDir, options) {
-  putFilesIntoLayers(fileList, options);
   var array = createStackArray(fileList, options);
+  if (array == null || array.length == 0) return;
+  putFilesIntoLayers(fileList, options);
   var fileCount = 1;
   var arrayString = "";
   for (var k in array) {
