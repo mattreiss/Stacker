@@ -12,6 +12,9 @@ function install_mac() {
 		echo "Couldn't find Photoshop"
 	fi
 }
+
 if [[ "$OSTYPE" == "darwin"* ]]; then
-        install_mac
+  install_mac
+else
+	echo "This OS is not supported :("
 fi
