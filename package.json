@@ -1,0 +1,25 @@
+{
+  "name": "stacker",
+  "version": "1.0.0",
+  "description": "Example: https://mattreiss.github.io/portfolio/#/post/4",
+  "main": "src/js/Server.js",
+  "scripts": {
+    "start": "node src/js/Server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mattreiss/stacker.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mattreiss/stacker/issues"
+  },
+  "homepage": "https://github.com/mattreiss/stacker#readme",
+  "dependencies": {
+    "express": "^4.16.4",
+    "node-fetch": "^2.3.0",
+    "socket.io": "^2.2.0"
+  }
+}

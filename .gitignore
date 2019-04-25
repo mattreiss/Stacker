@@ -1,12 +1,2 @@
-# Ignore All Files
-*
-
-
-# But Not These Files
-!.gitignore
-!README.md
-!index.html
-!Stacker.jsx
-!Stacker\ Scripts\ Only/
-!Stacker\ Scripts\ Only/*.jsx
-!install.sh
+.DS_STORE
+node_modules
