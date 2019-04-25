@@ -92,7 +92,7 @@ function applyCommetEffect(options, start, end) {
   var increments = 100 / (end - start + 1);
   for (var index = start; index <= end; index++) {
     var layer = activeDocument.layers[index];
-    layer.blendMode = index == end ? BlendMode.NORMAL : options.blendMode;
+    layer.blendMode = options.blendMode;
     layer.visible = true;
     layer.opacity = opacity;
     opacity -= increments;

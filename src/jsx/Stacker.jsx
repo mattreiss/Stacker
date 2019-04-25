@@ -57,21 +57,36 @@ function Stacker(args) {
   if (app.documents && app.documents.length > 0) {
     return alert("Please close all open documents and run the script again!");
   }
-
-  var selectedFolder = Folder.selectDialog( "Please select input folder");
-  if (selectedFolder !== null)  {
+  var selectedFolder;
+  if (args.length < 1) {
+    selectedFolder = Folder.selectDialog( "Please select input folder");
+    if (selectedFolder !== null)  {
+      fileList = readFileList(selectedFolder);
+    }
+    if (!fileList) {
+      return;
+    }
+    getOptions(goStack);
+  } else {
+    selectedFolder = new Folder(args[0]);
+    var options = (new Function( "return " + args[1]) )();
+    function fixBlendMode() {
+      switch (options.blendMode) {
+        case 8: return BlendMode.LIGHTEN;
+        case 4: return BlendMode.DARKEN;
+        case 2: return BlendMode.Normal;
+      }
+    }
+    options.blendMode = fixBlendMode();
     fileList = readFileList(selectedFolder);
-  }
-  if (!fileList) {
-    return;
+    goStack(options);
   }
 
-  // call imported functions
-  getOptions(function(options) {
+  function goStack(options) {
     outputDir = selectedFolder + "/stacks-of-" + options.stackLength;
     var f = new Folder(outputDir);
     if (!f.exists) {
-    	f.create()
+      f.create()
     }
     var time = Date.now();
     alert("Stacking " + fileList.length + " files!")
@@ -82,5 +97,5 @@ function Stacker(args) {
     }
     time = (Date.now() - time) / (1000 * 60);
     alert("Finished Stacking in " + parseFloat(time).toFixed(2) + " minutes!");
-  });
+  }
 }
