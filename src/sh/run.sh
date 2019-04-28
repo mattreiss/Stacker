@@ -9,8 +9,7 @@ cd ..
 
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
-  main="$(pwd)/jsx/Main.jsx"
-  osascript "./scpt/photoshop.scpt" $main $@
+  osascript "./scpt/photoshop.scpt" "$(pwd)/jsx/Main.jsx" $@
 else
 	echo "This OS is not supported :("
 fi

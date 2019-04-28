@@ -24,12 +24,12 @@ app.use(function (req, res, next) {
 
 
 function execute(script, callback, onError) {
-  log("Executing script " +  script)
+  console.log("Executing script " +  script)
   Thread.exec(PATH_TO_SCRIPTS + "/" + script,
     function (error, stdout, stderr) {
-      stdout && log(script + " stdout " + stdout)
-      stderr && log(script + " stderr " + stderr)
-      error && log(script + " error " + error)
+      stdout && console.log(script + " stdout " + stdout)
+      stderr && console.log(script + " stderr " + stderr)
+      error && console.log(script + " error " + error)
       callback(stdout)
       var errorMessage = stderr || error;
       if (errorMessage && onError) onError(errorMessage)
@@ -61,6 +61,11 @@ app.post('/run', function (req, res) {
     io.emit('error', { error: error });
   })
   res.send("running");
+})
+
+app.post('/list', function (req, res) {
+  const directory = req.body.directory
+  execute("list.sh " + directory, function(result) { res.send(result) })
 })
 
 

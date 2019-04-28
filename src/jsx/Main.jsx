@@ -1,4 +1,6 @@
 #include "Stacker.jsx"
+#include "Compress.jsx"
+#include "Util Scripts Only/Util.jsx"
 
 function getArgs(argv) {
     var args = []
@@ -14,7 +16,8 @@ function main(argv) {
     var command = argv[1];
     var args = getArgs(argv);
     switch (command) {
-        case "Stacker": return Stacker(args)
+        case "Compress": return Compress(args);
+        case "Stacker": return Stacker(args);
     }
     return "command not found"
 }
