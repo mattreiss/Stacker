@@ -187,7 +187,13 @@ function putFilesIntoLayers(fileList, options, keepVisible) {
     if (i == 0 || options.action) {
       open(fileList[i]);
       if (!keepVisible) {
-        runAction(options.action)
+        // runAction(options.action)
+        runAction('SetupSky');
+        for (var j = 0; j <= i; j++) {
+          runAction('TransformSky');
+        }
+        runAction('merge');
+        saveJpg(options.outputDir + "/transformed", i);
       }
       checkBackground();
       if (i > 0) {
@@ -329,7 +335,7 @@ function createStackArray(fileList, options) {
       growthList.push({i:i,j:j})
       j -= options.displacement;
       count++;
-      if (count % growEvery == 0) i--;
+      // if (count % growEvery == 0) i--;
     }
     start = i;
     if (j == 0) {
@@ -370,6 +376,7 @@ function createStackArray(fileList, options) {
 }
 
 function stack(fileList, outputDir, options) {
+  options.outputDir = outputDir
   var array = createStackArray(fileList, options);
   if (array == null || array.length == 0) return;
   putFilesIntoLayers(fileList, options);
