@@ -65,6 +65,7 @@ app.post('/run', function (req, res) {
 
 app.post('/list', function (req, res) {
   const directory = req.body.directory
+  app.use('/directory', express.static(directory));
   execute("list.sh " + directory, function(result) { res.send(result) })
 })
 
