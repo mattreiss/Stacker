@@ -47,6 +47,15 @@ function spawn(script, args, callback, onError, onComplete) {
   })
 }
 
+app.get('/status', function (req, res) {
+  res.send("running")
+})
+
+app.get('/stop', function (req, res) {
+  server.close()
+  res.send("stopping")
+})
+
 app.post('/run', function (req, res) {
   console.log("/run req.body", req.body)
   const command = req.body.command
@@ -65,8 +74,16 @@ app.post('/run', function (req, res) {
 
 app.post('/list', function (req, res) {
   const directory = req.body.directory
-  app.use('/directory', express.static(directory));
-  execute("list.sh " + directory, function(result) { res.send(result) })
+  Thread.exec("whoami", function(error, stdout, stderr) {
+    if (stdout) {
+      const path = directory.replace("~","/Users/" + stdout.trim());
+      console.log("app.use path = " + path);
+      app.use('/directory', express.static(path));
+      execute("list.sh " + directory, function(result) { res.send(result) })
+    } else {
+      res.send("")
+    }
+  })
 })
 
 
