@@ -5,6 +5,7 @@
 #include "Util Scripts Only/StringUtil.jsx"
 #include "Util Scripts Only/LayerUtil.jsx"
 #include "Util Scripts Only/JsonUtil.jsx"
+#include "Util Scripts Only/ArrayUtil.jsx"
 
 #include "Options Scripts Only/StackerOptions.jsx"
 
@@ -15,8 +16,9 @@ function main(args) {
     if (args == null || args.length < 2) {
         return "missing arguments";
     }
-    var directory = args.shift();
-    var command = args.shift();
+    var directory = args[0];
+    var command = args[1];
+    args = ArrayUtil.shift(args, 2);
     switch (command) {
         case "Compress": return Compress(args);
         case "Stacker": return Stacker(args);

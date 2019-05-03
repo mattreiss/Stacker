@@ -70,7 +70,7 @@ FileUtil.putFilesIntoLayers = function(fileList, options, keepVisible) {
   for (var i = 0; i < fileList.length; i++) {
     if (i == 0 || options.action) {
       open(fileList[i]);
-      if (!keepVisible) {
+      if (!keepVisible && options.action) {
         LayerUtil.runAction(options.action)
         // LayerUtil.runAction('SetupSky');
         // for (var j = 0; j <= i; j++) {

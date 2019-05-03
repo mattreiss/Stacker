@@ -124,8 +124,8 @@ function Stacker(args) {
       FileUtil.exportVideo(fileList, options, outputDir + "/mp4", "original-" + options.video + ".mp4")
       if (options.stackLength > 1) {
         app.activeDocument.close(SaveOptions.DONOTSAVECHANGES);
-        FileUtil.putFilesIntoLayers(fileList, options, true);
         fileList = FileUtil.sortFiles(new Folder(outputDir + "/jpg"));
+        FileUtil.putFilesIntoLayers(fileList, options, true);
         FileUtil.exportVideo(fileList, options, outputDir + "/mp4", "stacked-" + options.video + ".mp4");
       }
     }
