@@ -6,6 +6,7 @@
 #include "Util Scripts Only/LayerUtil.jsx"
 #include "Util Scripts Only/JsonUtil.jsx"
 #include "Util Scripts Only/ArrayUtil.jsx"
+#include "Util Scripts Only/LogUtil.jsx"
 
 #include "Options Scripts Only/StackerOptions.jsx"
 
@@ -19,6 +20,8 @@ function main(args) {
     var directory = args[0];
     var command = args[1];
     args = ArrayUtil.shift(args, 2);
+    Log.info("Main.jsx: args = " + args[0] + " " + args[1])
+    return;
     switch (command) {
         case "Compress": return Compress(args);
         case "Stacker": return Stacker(args);
