@@ -266,10 +266,12 @@ LayerUtil.applyReverseTileEffect = function(options, start, end) {
 
 
 LayerUtil.lightenAllLayers = function() {
+  alert("start")
   LayerUtil.hideLayers(0);
   var start = 0;
-  var end = 345;
-  LayerUtil.applyTileBendEffect({blendMode: BlendMode.NORMAL}, start, end, 172);
+  var end = activeDocument.layers.length -1;
+  LayerUtil.applyCommetEffect({blendMode: BlendMode.NORMAL}, start, end);
+  alert("end")
 }
 
 LayerUtil.applyCommetEffect = function(options, start, end) {
