@@ -59,6 +59,7 @@ LayerUtil.restoreDefaultLayers = function(start, end) {
     layer.blendMode = BlendMode.NORMAL;
     layer.visible = true;
     layer.opacity = 100;
+    LayerUtil.deleteMask(layer);
   }
 }
 
@@ -66,10 +67,72 @@ LayerUtil.hideLayers = function(i, j) {
   var end = j && j < activeDocument.layers.length ? j : activeDocument.layers.length;
   for (var index = i; index < end; index++) {
     var layer = activeDocument.layers[index];
+    LayerUtil.selectSingleLayer(layer);
+    LayerUtil.deleteMask(layer);
     layer.visible = false;
   }
 }
 
+
+LayerUtil.selectArea = function(x, y, w, h) {
+  if ( !x || x < 0 ) x = 0;
+  if ( !y || y < 0 ) y = 0;
+  if ( !w || x + w > activeDocument.width ) w = activeDocument.width - x;
+  if ( !h || y + h > activeDocument.height ) h = activeDocument.height - y;
+  activeDocument.selection.select([ [x,y], [x,y+h], [x+w,y+h], [x+w,y] ]);
+}
+
+LayerUtil.createMask = function() {
+  var maskType = 'RvlS' ; //from selection
+  //requires a selection 'RvlS'  complete mask 'RvlA' otherThanSelection 'HdSl'
+  var desc140 = new ActionDescriptor();
+  desc140.putClass( charIDToTypeID('Nw  '), charIDToTypeID('Chnl') );
+  var ref51 = new ActionReference();
+  ref51.putEnumerated( charIDToTypeID('Chnl'), charIDToTypeID('Chnl'), charIDToTypeID('Msk ') );
+  desc140.putReference( charIDToTypeID('At  '), ref51 );
+  desc140.putEnumerated( charIDToTypeID('Usng'), charIDToTypeID('UsrM'), charIDToTypeID(maskType) );
+  executeAction( charIDToTypeID('Mk  '), desc140, DialogModes.NO );
+}
+
+LayerUtil.selectLayerMask = function(layer) {
+  var idslct = charIDToTypeID( "slct" );
+  var desc58 = new ActionDescriptor();
+  var idnull = charIDToTypeID( "null" );
+  var ref43 = new ActionReference();
+  var idChnl = charIDToTypeID( "Chnl" );
+  var idChnl = charIDToTypeID( "Chnl" );
+  var idMsk = charIDToTypeID( "Msk " );
+  ref43.putEnumerated( idChnl, idChnl, idMsk );
+  var idLyr = charIDToTypeID( "Lyr " );
+  ref43.putName( idLyr, layer.name );
+  desc58.putReference( idnull, ref43 );
+  var idMkVs = charIDToTypeID( "MkVs" );
+  desc58.putBoolean( idMkVs, false );
+  executeAction( idslct, desc58, DialogModes.NO );
+}
+
+LayerUtil.hasMask = function() {
+  var ref = new ActionReference();
+  ref.putEnumerated(charIDToTypeID("Lyr "), charIDToTypeID("Ordn"), charIDToTypeID("Trgt"));
+  var desc = executeActionGet(ref);
+  return desc.hasKey(charIDToTypeID("UsrM"));
+}
+
+LayerUtil.deleteMask = function(layer) {
+  if (LayerUtil.hasMask()) {
+    LayerUtil.selectLayerMask(layer);
+    var idDlt = charIDToTypeID( "Dlt " );
+    var desc15 = new ActionDescriptor();
+    var idnull = charIDToTypeID( "null" );
+    var ref10 = new ActionReference();
+    var idChnl = charIDToTypeID( "Chnl" );
+    var idOrdn = charIDToTypeID( "Ordn" );
+    var idTrgt = charIDToTypeID( "Trgt" );
+    ref10.putEnumerated( idChnl, idOrdn, idTrgt );
+    desc15.putReference( idnull, ref10 );
+    executeAction( idDlt, desc15, DialogModes.NO );
+  }
+}
 
 LayerUtil.applyNormalEffect = function(options, start, end) {
   for (var index = start; index <= end; index++) {
@@ -78,6 +141,135 @@ LayerUtil.applyNormalEffect = function(options, start, end) {
     layer.visible = true;
     layer.opacity = 100;
   }
+}
+
+LayerUtil.fill = function() {
+  var idFl = charIDToTypeID( "Fl  " );
+  var desc123 = new ActionDescriptor();
+  var idUsng = charIDToTypeID( "Usng" );
+  var idFlCn = charIDToTypeID( "FlCn" );
+  var idFrgC = charIDToTypeID( "FrgC" );
+  desc123.putEnumerated( idUsng, idFlCn, idFrgC );
+  var idOpct = charIDToTypeID( "Opct" );
+  var idPrc = charIDToTypeID( "#Prc" );
+  desc123.putUnitDouble( idOpct, idPrc, 100.000000 );
+  var idMd = charIDToTypeID( "Md  " );
+  var idBlnM = charIDToTypeID( "BlnM" );
+  var idNrml = charIDToTypeID( "Nrml" );
+  desc123.putEnumerated( idMd, idBlnM, idNrml );
+  executeAction( idFl, desc123, DialogModes.NO );
+}
+
+LayerUtil.selectWhite = function() {// =======================================================
+  var idsetd = charIDToTypeID( "setd" );
+  var desc130 = new ActionDescriptor();
+  var idnull = charIDToTypeID( "null" );
+  var ref14 = new ActionReference();
+  var idClr = charIDToTypeID( "Clr " );
+  var idFrgC = charIDToTypeID( "FrgC" );
+  ref14.putProperty( idClr, idFrgC );
+  desc130.putReference( idnull, ref14 );
+  var idT = charIDToTypeID( "T   " );
+  var desc131 = new ActionDescriptor();
+  var idH = charIDToTypeID( "H   " );
+  var idAng = charIDToTypeID( "#Ang" );
+  desc131.putUnitDouble( idH, idAng, 0.000000 );
+  var idStrt = charIDToTypeID( "Strt" );
+  desc131.putDouble( idStrt, 0.000000 );
+  var idBrgh = charIDToTypeID( "Brgh" );
+  desc131.putDouble( idBrgh, 100.000000 );
+  var idHSBC = charIDToTypeID( "HSBC" );
+  desc130.putObject( idT, idHSBC, desc131 );
+  var idSrce = charIDToTypeID( "Srce" );
+  desc130.putString( idSrce, """photoshopPicker""" );
+  executeAction( idsetd, desc130, DialogModes.NO );
+}
+
+
+LayerUtil.applyTileBendEffect = function(options, start, end, vertex) {
+  var stackSize = end - start + 1;
+  var width = activeDocument.width;
+  var height = activeDocument.height;
+  var y = 0;
+  var w = width / stackSize;
+  var h = height;
+  function maskLayer(layer, x, y, w, h) {
+    layer.blendMode = options.blendMode;
+    layer.visible = true;
+    LayerUtil.selectSingleLayer(layer);
+    if (!LayerUtil.hasMask()) {
+      LayerUtil.selectArea(x - 1, y, w + 2, h);
+      LayerUtil.createMask();
+    } else {
+        LayerUtil.selectLayerMask(layer);
+        LayerUtil.selectWhite();
+        LayerUtil.selectArea(x - 1, y, w + 2, h);
+        LayerUtil.fill();
+    }
+  }
+  var isReverse = true;
+  var layerIndex = isReverse ? 1 : activeDocument.layers.length - 2;
+  for (var index = vertex - 1; index >= 0; index--) {
+    var x = index * w;
+    var layer = activeDocument.layers[layerIndex];
+    maskLayer(layer, x, y, w, h);
+    isReverse ? layerIndex++ : layerIndex--;
+  }
+  layerIndex = isReverse ? 0 : activeDocument.layers.length - 1;
+  for (var index = vertex; index <= end; index++) {
+    var x = index * w;
+    var layer = activeDocument.layers[layerIndex];
+    maskLayer(layer, x, y, w, h);
+    isReverse ? layerIndex++ : layerIndex--;
+  }
+}
+
+LayerUtil.applyTileEffect = function(options, start, end) {
+  var stackSize = end - start + 1;
+  var width = activeDocument.width;
+  var height = activeDocument.height;
+  var x = 0;
+  var y = 0;
+  var w = width / stackSize;
+  var h = height;
+  for (var index = start; index <= end; index++) {
+    var layer = activeDocument.layers[index];
+    layer.blendMode = options.blendMode;
+    layer.visible = true;
+    LayerUtil.selectSingleLayer(layer);
+    LayerUtil.deleteMask(layer);
+    LayerUtil.selectArea(x - 1, y, w + 2, h);
+    LayerUtil.createMask();
+    x += w;
+  }
+}
+
+LayerUtil.applyReverseTileEffect = function(options, start, end) {
+  var stackSize = end - start + 1;
+  var width = activeDocument.width;
+  var height = activeDocument.height;
+  var y = 0;
+  var w = width / stackSize;
+  var h = height;
+  var x = width - w;
+  for (var index = start; index <= end; index++) {
+    var layer = activeDocument.layers[index];
+    layer.blendMode = options.blendMode;
+    layer.visible = true;
+    LayerUtil.selectSingleLayer(layer);
+    LayerUtil.deleteMask(layer);
+    LayerUtil.selectArea(x - 1, y, w + 2, h);
+    LayerUtil.createMask();
+    x -= w;
+  }
+}
+
+
+LayerUtil.lightenAllLayers = function() {
+  LayerUtil.hideLayers(0);
+  var start = 0;
+  var end = 345;
+  LayerUtil.applyTileBendEffect({blendMode: BlendMode.NORMAL}, start, end, 172);
 }
 
 LayerUtil.applyCommetEffect = function(options, start, end) {
@@ -104,11 +296,14 @@ LayerUtil.applyReverseCommetEffect = function(options, start, end) {
   }
 }
 
-LayerUtil.applyEffect = function(options, i, j) {
+LayerUtil.applyEffect = function(options, i, j, k) {
   switch (options.effect) {
     case 'normal': return LayerUtil.applyNormalEffect(options, j, i);
     case 'reverseCommet': return LayerUtil.applyReverseCommetEffect(options, j, i);
     case "commet": return LayerUtil.applyCommetEffect(options, j, i);
+    case "tile": return LayerUtil.applyTileEffect(options, j, i);
+    case "tileBend": return LayerUtil.applyTileBendEffect(options, j, i, k);
+    case "reverseTile": return LayerUtil.applyReverseTileEffect(options, j, i);
   }
 }
 

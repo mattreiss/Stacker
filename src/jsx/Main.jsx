@@ -1,5 +1,6 @@
 #include "Stacker.jsx"
 #include "Compress.jsx"
+#include "Test.jsx"
 
 #include "Util Scripts Only/FileUtil.jsx"
 #include "Util Scripts Only/StringUtil.jsx"
@@ -22,6 +23,7 @@ function main(args) {
     switch (command) {
         case "Compress": return Compress(args);
         case "Stacker": return Stacker(args);
+        case "Test": return Test(args);
     }
     return "command not found"
 }

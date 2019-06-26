@@ -1,7 +1,29 @@
 var fileList;
 var outputDir;
 
+
 function Stacker(args) {
+
+  function test(args) {
+    selectedFolder = new Folder(args[0]);
+    var options = StackerOptions.init(args[1]);
+    fileList = FileUtil.sortFiles(selectedFolder);
+    // goStack(options);
+    outputDir = selectedFolder + "/stacks-of-" + options.stackLength;
+
+    FileUtil.exportVideo(fileList, options, outputDir + "/mp4", "original-" + options.video + ".mp4");
+
+    fileList = FileUtil.sortFiles(new Folder(outputDir + "/transformed"));
+    FileUtil.putFilesIntoLayers(fileList, options, true);
+    FileUtil.exportVideo(fileList, options, outputDir + "/mp4", "transformed-" + options.video + ".mp4");
+
+    fileList = FileUtil.sortFiles(new Folder(outputDir + "/jpg"));
+    FileUtil.putFilesIntoLayers(fileList, options, true);
+    FileUtil.exportVideo(fileList, options, outputDir + "/mp4", "stacked-" + options.video + ".mp4");
+
+  }
+  // return test(args);
+
   if (app.documents && app.documents.length > 0) {
     var c = confirm("All open documents must be closed before continuing. Would you like to continue and close all open documents without saving?");
     if (!c) return;
@@ -25,6 +47,8 @@ function Stacker(args) {
   }
 
   function goStack(options) {
+    var defaultRulerUnits = app.preferences.rulerUnits;
+    app.preferences.rulerUnits = Units.PIXELS;
     var time = Date.now();
     outputDir = selectedFolder + "/stacks-of-" + options.stackLength;
     FileUtil.folder(outputDir);
@@ -32,6 +56,7 @@ function Stacker(args) {
     stack(fileList, outputDir, options);
     time = (Date.now() - time) / (1000 * 60);
     alert("Finished Stacking in " + parseFloat(time).toFixed(2) + " minutes!");
+    app.preferences.rulerUnits = defaultRulerUnits;
   }
 
   /**
@@ -45,13 +70,22 @@ function Stacker(args) {
     var hasDecay = "23".indexOf(options.stackGrowth) != -1;
     var hasOverlap = hasGrowth && hasDecay && fileList.length < (options.stackLength * 3);
     var growEvery = options.growEvery;
+    var start = fileList.length - 1;
+    var end = 0;
+    if (false && options.stackOnce) {
+      return [{i: start, j: end}];
+    }
+    if (options.effect == "tileBend") {
+      for (var i = 0; i < fileList.length; i++) {
+        constantList.push({i: start, j:end});
+      }
+      return constantList;
+    }
     if (hasOverlap) {
       alert("Warning: The stack length of " + options.stackLength + " is not obtainable with only " + fileList.length + " files. The rate of change will be increased.");
       // options.displacement++;
       growEvery++;
     }
-    var start = fileList.length - 1;
-    var end = 0;
     if (hasGrowth) {
       var i = start;
       var j = i - 1;
@@ -60,7 +94,7 @@ function Stacker(args) {
         growthList.push({i:i,j:j})
         j -= options.displacement;
         count++;
-        if (count % growEvery == 0) i--;
+        if (growEvery > 1 && count % growEvery == 0) i--;
       }
       start = i;
       if (j == 0) {
@@ -114,12 +148,16 @@ function Stacker(args) {
       var j = array[k].j;
       arrayString += "\"i:" + i;
       arrayString += " - j:" + j + "\",";
-      LayerUtil.applyEffect(options, i, j);
+      LayerUtil.applyEffect(options, i, j, k);
       FileUtil.saveJpg(outputDir + "/jpg", fileCount);
-      LayerUtil.hideLayers(i, i + options.displacement);
+      LayerUtil.hideLayers(0);
       fileCount++;
+      // if (fileCount < 3) {
+      //   var c = confirm("Continue stacking?");
+      //   if (!c) return;
+      // }
     }
-    if (options.video) {
+    if (options.video && !options.stackOnce) {
       LayerUtil.restoreDefaultLayers(0, fileList.length - 1);
       FileUtil.exportVideo(fileList, options, outputDir + "/mp4", "original-" + options.video + ".mp4")
       if (options.stackLength > 1) {

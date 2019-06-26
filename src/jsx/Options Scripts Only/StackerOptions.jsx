@@ -8,20 +8,21 @@ StackerOptions.init = function(obj) {
       default:
       case 8: return BlendMode.LIGHTEN;
       case 4: return BlendMode.DARKEN;
-      case 2: return BlendMode.Normal;
+      case 2: return BlendMode.NORMAL;
     }
   }
   var options = options = {
     blendMode: getBlendMode(),
     effect: obj.effect || "commet",
     stackLength: obj.stackLength || 32,
-    stackGrowth: obj.stackGrowth || 1,
+    stackGrowth: obj.stackGrowth || null,
     autoAlign: obj.autoAlign || false,
     action: obj.action || null,
     displacement: obj.displacement || 1,
     video: obj.video || "1080@24",
     delayLength: obj.delayLength || 0,
-    growEvery: obj.growEvery || 2
+    growEvery: obj.growEvery || 1,
+    stackOnce: obj.stackOnce
   };
   StackerOptions.options = options;
   return options;

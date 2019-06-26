@@ -73,10 +73,10 @@ FileUtil.putFilesIntoLayers = function(fileList, options, keepVisible) {
       if (!keepVisible && options.action) {
         LayerUtil.runAction(options.action)
         // LayerUtil.runAction('SetupSky');
-        // for (var j = 0; j <= i; j++) {
-        //   LayerUtil.runAction('TransformSky');
+        // for (var j = 0; j <= i / 2; j++) {
+        //   LayerUtil.runAction('spin');
         // }
-        // LayerUtil.runAction('merge');
+        // // LayerUtil.runAction('merge');
         FileUtil.saveJpg(options.outputDir + "/transformed", i);
       }
       LayerUtil.checkBackground();
@@ -94,7 +94,7 @@ FileUtil.putFilesIntoLayers = function(fileList, options, keepVisible) {
   }
   if (options.autoAlign) {
     LayerUtil.selectAllLayers();
-    LayerUtil.alignLayersByContent(); // defined in StackSupport.jsx
+    alignLayersByContent(); // defined in StackSupport.jsx
   }
 }
 
