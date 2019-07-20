@@ -30,3 +30,7 @@ function main(args) {
     }
     return "command not found"
 }
+
+if (arguments[0] && arguments[0].indexOf("C:") > -1) {
+  main(arguments);
+}
