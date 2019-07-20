@@ -296,6 +296,53 @@ LayerUtil.applyReverseCommetEffect = function(options, start, end) {
   }
 }
 
+LayerUtil.alignLayers = function(options) {
+  function align() {
+    var idAlgn = charIDToTypeID( "Algn" );
+    var desc242 = new ActionDescriptor();
+    var idnull = charIDToTypeID( "null" );
+    var ref240 = new ActionReference();
+    var idLyr = charIDToTypeID( "Lyr " );
+    var idOrdn = charIDToTypeID( "Ordn" );
+    var idTrgt = charIDToTypeID( "Trgt" );
+    ref240.putEnumerated( idLyr, idOrdn, idTrgt );
+    desc242.putReference( idnull, ref240 );
+    var idUsng = charIDToTypeID( "Usng" );
+    var idADSt = charIDToTypeID( "ADSt" );
+    var idADSContent = stringIDToTypeID( "ADSContent" );
+    desc242.putEnumerated( idUsng, idADSt, idADSContent );
+    var idAply = charIDToTypeID( "Aply" );
+    var idprojection = stringIDToTypeID( "projection" );
+    var idAuto = charIDToTypeID( "Auto" );
+    desc242.putEnumerated( idAply, idprojection, idAuto );
+    var idvignette = stringIDToTypeID( "vignette" );
+    desc242.putBoolean( idvignette, false );
+    var idradialDistort = stringIDToTypeID( "radialDistort" );
+    desc242.putBoolean( idradialDistort, false );
+    executeAction( idAlgn, desc242, DialogModes.NO );
+  }
+
+  var size = app.activeDocument.layers.length;
+  var layer0 = app.activeDocument.layers[0];
+  layer0.visible = true;
+  LayerUtil.setLayerLocked(layer0, true);
+  for (var i = 1; i < size; i++) {
+    var layer = app.activeDocument.layers[i];
+    layer.visible = true;
+    LayerUtil.selectSingleLayer(layer0);
+    LayerUtil.addToLayerSelection(layer);
+    align();
+    layer.visible = false;
+  }
+  LayerUtil.setLayerLocked(layer0, false);
+  for (var i = 0; i < size; i++) {
+    var layer = app.activeDocument.layers[i];
+    layer.visible = true;
+    FileUtil.saveJpg(options.outputDir + "/aligned", layer.name);
+    layer.visible = false;
+  }
+}
+
 LayerUtil.applyEffect = function(options, i, j, k) {
   switch (options.effect) {
     case 'normal': return LayerUtil.applyNormalEffect(options, j, i);

@@ -4,24 +4,15 @@ var outputDir;
 
 function Stacker(args) {
 
-  function test(args) {
-    selectedFolder = new Folder(args[0]);
-    var options = StackerOptions.init(args[1]);
-    fileList = FileUtil.sortFiles(selectedFolder);
-    // goStack(options);
-    outputDir = selectedFolder + "/stacks-of-" + options.stackLength;
-
-    FileUtil.exportVideo(fileList, options, outputDir + "/mp4", "original-" + options.video + ".mp4");
-
-    fileList = FileUtil.sortFiles(new Folder(outputDir + "/transformed"));
-    FileUtil.putFilesIntoLayers(fileList, options, true);
-    FileUtil.exportVideo(fileList, options, outputDir + "/mp4", "transformed-" + options.video + ".mp4");
-
-    fileList = FileUtil.sortFiles(new Folder(outputDir + "/jpg"));
-    FileUtil.putFilesIntoLayers(fileList, options, true);
-    FileUtil.exportVideo(fileList, options, outputDir + "/mp4", "stacked-" + options.video + ".mp4");
-
-  }
+  // function test(args) {
+  //   selectedFolder = new Folder(args[0]);
+  //   var options = StackerOptions.init(args[1]);
+  //   fileList = FileUtil.sortFiles(selectedFolder);
+  //   // goStack(options);
+  //   options.outputDir = selectedFolder + "/stacks-of-" + options.stackLength;
+  //   // FileUtil.putFilesIntoLayers(fileList, options);
+  //   LayerUtil.applyReverseCommetEffect(options, 0, app.activeDocument.layers.length - 1);
+  // }
   // return test(args);
 
   if (app.documents && app.documents.length > 0) {

@@ -21,8 +21,8 @@ function main(args) {
     var directory = args[0];
     var command = args[1];
     args = ArrayUtil.shift(args, 2);
-    Log.info("Main.jsx: args = " + args[0] + " " + args[1])
-    return;
+    // Log.info("Main.jsx: args = " + args[0] + " " + args[1])
+    // return;
     switch (command) {
         case "Compress": return Compress(args);
         case "Stacker": return Stacker(args);

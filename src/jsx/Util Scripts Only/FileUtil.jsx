@@ -92,9 +92,15 @@ FileUtil.putFilesIntoLayers = function(fileList, options, keepVisible) {
     layer.name = 'Layer ' + i;
     layer.visible = keepVisible || false;
   }
-  if (options.autoAlign) {
+  if (options.autoAlign && !keepVisible) {
     LayerUtil.selectAllLayers();
     alignLayersByContent(); // defined in StackSupport.jsx
+    for (var i = 0; i < app.activeDocument.layers.length; i++) {
+      var layer = app.activeDocument.layers[i];
+      layer.visible = true;
+      FileUtil.saveJpg(options.outputDir + "/aligned", layer.name);
+      layer.visible = false;
+    }
   }
 }
 
