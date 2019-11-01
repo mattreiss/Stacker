@@ -7,11 +7,12 @@ function Stacker(args) {
   // function test(args) {
   //   selectedFolder = new Folder(args[0]);
   //   var options = StackerOptions.init(args[1]);
-  //   fileList = FileUtil.sortFiles(selectedFolder);
+  //   // fileList = FileUtil.sortFiles(selectedFolder).reverse();
+  //   LayerUtil.applyEffect(options, fileList.length - 1, 0, null);
   //   // goStack(options);
-  //   options.outputDir = selectedFolder + "/stacks-of-" + options.stackLength;
+  //   // options.outputDir = selectedFolder + "/test";
   //   // FileUtil.putFilesIntoLayers(fileList, options);
-  //   LayerUtil.applyReverseCommetEffect(options, 0, app.activeDocument.layers.length - 1);
+  //   // FileUtil.exportVideo(fileList, options, options.outputDir + "/mp4", "original-" + options.video + ".mp4")
   // }
   // return test(args);
 
@@ -60,10 +61,10 @@ function Stacker(args) {
     var hasGrowth = "13".indexOf(options.stackGrowth) != -1;
     var hasDecay = "23".indexOf(options.stackGrowth) != -1;
     var hasOverlap = hasGrowth && hasDecay && fileList.length < (options.stackLength * 3);
-    var growEvery = options.growEvery;
+    var growEvery = 2;//options.growEvery;
     var start = fileList.length - 1;
     var end = 0;
-    if (false && options.stackOnce) {
+    if (options.stackOnce) {
       return [{i: start, j: end}];
     }
     if (options.effect == "tileBend") {
@@ -101,9 +102,9 @@ function Stacker(args) {
         decayList.push({i:i,j:j})
         i += options.displacement;
         count++;
-        if (count % growEvery == 0) j++;
+        if (growEvery > 1 && count % growEvery == 0) j++;
       }
-      end = (count % growEvery != 0) ? j + 1 : j;
+      end = (growEvery > 1 && count % growEvery != 0) ? j + 1 : j;
       if (i == fileList.length) {
         alert("Warning: The stack length of " + options.stackLength + " is not obtainable with only " + fileList.length + " files");
         return decayList;
@@ -130,18 +131,23 @@ function Stacker(args) {
   function stack(fileList, outputDir, options) {
     options.outputDir = outputDir
     var array = createStackArray(fileList, options);
+    // Log.info("array: ")
+    // for (var index in array) {
+    //   var item = array[index];
+    //   var str = "{i: " + item.i + ", j: " + item.j + "}";
+    //   Log.info(str)
+    // }
+    // return;
     if (array == null || array.length == 0) return;
     FileUtil.putFilesIntoLayers(fileList, options);
     var fileCount = 1;
-    var arrayString = "";
     for (var k in array) {
+    if (options.stackLength == 1) break;
       var i = array[k].i;
       var j = array[k].j;
-      arrayString += "\"i:" + i;
-      arrayString += " - j:" + j + "\",";
       LayerUtil.applyEffect(options, i, j, k);
       FileUtil.saveJpg(outputDir + "/jpg", fileCount);
-      LayerUtil.hideLayers(0);
+      LayerUtil.hideLayers(j, i);
       fileCount++;
       // if (fileCount < 3) {
       //   var c = confirm("Continue stacking?");

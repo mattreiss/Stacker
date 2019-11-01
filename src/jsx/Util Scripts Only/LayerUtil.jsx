@@ -63,13 +63,15 @@ LayerUtil.restoreDefaultLayers = function(start, end) {
   }
 }
 
-LayerUtil.hideLayers = function(i, j) {
-  var end = j && j < activeDocument.layers.length ? j : activeDocument.layers.length;
-  for (var index = i; index < end; index++) {
+LayerUtil.hideLayers = function(start, end) {
+  if (!end || end >= activeDocument.layers.length) {
+    end = activeDocument.layers.length - 1;
+  }
+  for (var index = start; index <= end; index++) {
     var layer = activeDocument.layers[index];
     LayerUtil.selectSingleLayer(layer);
-    LayerUtil.deleteMask(layer);
     layer.visible = false;
+    LayerUtil.deleteMask(layer);
   }
 }
 
@@ -287,11 +289,12 @@ LayerUtil.applyCommetEffect = function(options, start, end) {
 }
 
 LayerUtil.applyReverseCommetEffect = function(options, start, end) {
+  Log.info("applyReverseCommetEffect start=" + start + " end=" + end);
   var opacity = 100;
   var increments = 100 / (end - start + 1);
   for (var index = end; index >= start; index--) {
     var layer = activeDocument.layers[index];
-    layer.blendMode = index == end ? BlendMode.NORMAL : options.blendMode;
+    layer.blendMode = options.blendMode;
     layer.visible = true;
     layer.opacity = opacity;
     opacity -= increments;
