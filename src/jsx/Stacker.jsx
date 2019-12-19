@@ -34,6 +34,7 @@ function Stacker(args) {
   } else {
     selectedFolder = new Folder(args[0]);
     var options = StackerOptions.init(args[1]);
+    options.selectedFolder = selectedFolder;
     fileList = FileUtil.sortFiles(selectedFolder);
     goStack(options);
   }
@@ -61,7 +62,7 @@ function Stacker(args) {
     var hasGrowth = "13".indexOf(options.stackGrowth) != -1;
     var hasDecay = "23".indexOf(options.stackGrowth) != -1;
     var hasOverlap = hasGrowth && hasDecay && fileList.length < (options.stackLength * 3);
-    var growEvery = 2;//options.growEvery;
+    var growEvery = options.growEvery;
     var start = fileList.length - 1;
     var end = 0;
     if (options.stackOnce) {

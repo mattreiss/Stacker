@@ -5,13 +5,13 @@ StackerOptions.init = function(obj) {
   else obj = JsonUtil.parseJson(obj);
   function getBlendMode() {
     switch (obj.blendMode) {
-      default:
       case 8: return BlendMode.LIGHTEN;
       case 4: return BlendMode.DARKEN;
       case 2: return BlendMode.NORMAL;
     }
+    return BlendMode.DARKEN;
   }
-  var options = options = {
+  var options = {
     blendMode: getBlendMode(),
     effect: obj.effect || "commet",
     stackLength: obj.stackLength || 32,
@@ -21,7 +21,7 @@ StackerOptions.init = function(obj) {
     displacement: obj.displacement || 1,
     video: obj.video || "1080@24",
     delayLength: obj.delayLength || 0,
-    growEvery: obj.growEvery || 1,
+    growEvery: obj.growEvery === 0 ? 0 : (obj.growEvery || 1),
     stackOnce: obj.stackOnce
   };
   StackerOptions.options = options;

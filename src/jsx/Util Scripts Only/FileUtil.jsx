@@ -67,10 +67,17 @@ FileUtil.openFileAsLayer = function(filePath) {
 }
 
 FileUtil.putFilesIntoLayers = function(fileList, options, keepVisible) {
+  var comboFolder = new Folder(options.selectedFolder + "/combine");
+  var comboFileList = comboFolder.exists ? FileUtil.sortFiles(comboFolder) : [];
   for (var i = 0; i < fileList.length; i++) {
     if (i == 0 || options.action) {
       open(fileList[i]);
       if (!keepVisible && options.action) {
+        if (comboFolder.exists && comboFileList.length > 0) {
+          var comboFile = comboFileList[i];
+          if (!comboFile) comboFile = comboFileList[comboFileList.length - 1]; // default to last
+          FileUtil.openFileAsLayer(comboFile);
+        }
         LayerUtil.runAction(options.action)
         // LayerUtil.runAction('SetupSky');
         // for (var j = 0; j <= i / 2; j++) {
