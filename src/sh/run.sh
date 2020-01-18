@@ -9,7 +9,19 @@ cd ..
 
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
-  osascript "./scpt/photoshop.scpt" "$(pwd)/jsx/Main.jsx" $@
+  photoshop=$(ls /Applications/ | grep 'Photoshop')
+  scpt="./scpt/photoshop.scpt"
+  scpt2="./scpt/photoshop2.scpt"
+  if [[ $photoshop == "" ]]; then
+    echo "Photoshop isn't installed"
+    exit 1
+  else
+    echo "found photoshop $photoshop"
+    sed "s/Adobe Photoshop CC/${photoshop}/g" $scpt > $scpt2
+    scpt=$scpt2
+  fi
+  echo "run scpt = $scpt"
+  osascript ${scpt} "$(pwd)/jsx/Main.jsx" $@
 elif grep -q Microsoft /proc/version; then
   path="$(pwd)/jsx/Main.jsx"
   path=$(echo $path | sed 's/\//\\/g')
