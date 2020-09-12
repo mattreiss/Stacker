@@ -19,7 +19,7 @@
   "homepage": "https://github.com/mattreiss/stacker#readme",
   "dependencies": {
     "express": "^4.16.4",
-    "node-fetch": "^2.3.0",
+    "node-fetch": "^2.6.1",
     "socket.io": "^2.2.0"
   }
 }
